@@ -88,6 +88,7 @@ def samples(sample):
     # Filter the data based on the sample number and
     # only keep rows with values above 1
     sample_data = df.loc[df[sample] > 1, ["otu_id", "otu_label", sample]]
+    sample_data.sort_values(by=sample, inplace=True, ascending=False)
     #sample_data = sample_data.sort_values(by="otu_id")
     # Format the data to send as json
     data = {
@@ -98,6 +99,18 @@ def samples(sample):
     #print(sample_data)
     return jsonify(data)
 
+@app.route("/wfreq/<sample>")
+def wfreq(sample):
+    sel = [Samples_Metadata.WFREQ]
+
+    result = db.session.query(*sel).filter(Samples_Metadata.sample == sample).all()
+
+    # Create a dictionary entry for each row of metadata information
+    sample_metadata = {}
+    sample_metadata["WFREQ"] = result[0]
+
+    #print(sample_metadata)
+    return jsonify(sample_metadata)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
